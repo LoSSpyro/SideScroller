@@ -13,20 +13,26 @@ public class PlayerMovement : MonoBehaviour {
 	private bool jump = false;
 
 	private Vector3 startPosition;
+	private float startSpeed;
 	private List<GameObject> collectedPickups = new List<GameObject>();
 
 	[HideInInspector]
 	public float collectionSpeed = 0f;
 	[HideInInspector]
 	public float jumpRange = 0f;
+	[HideInInspector]
+	public bool restart = false;
 
 	private Rigidbody rb;
+	private GameController gameController;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
+		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent<GameController> ();
 		startPosition = transform.position;
-
+		startSpeed = maxSpeed;
+		jumpRange = 2 * maxSpeed;
 	}
 
 	void Update() {
@@ -54,13 +60,10 @@ public class PlayerMovement : MonoBehaviour {
 
 	void OnCollisionEnter (Collision collision) {
 			grounded = true;
-		jumpRange = transform.position.x - jumpRange;
-		Debug.Log ("Jump Range = " + jumpRange);
 	}
 
 	void OnCollisionExit (Collision collision) {
 		grounded = false;
-		jumpRange = transform.position.x;
 	}
 
 	void OnTriggerEnter(Collider other) {
@@ -72,17 +75,24 @@ public class PlayerMovement : MonoBehaviour {
 
 	IEnumerator IncreaseMoveSpeed() {
 		maxSpeed++;
+		jumpRange += 2;
 		yield return new WaitForSeconds (pickUpLasttime);
+		if (restart)
+			yield break;
 		maxSpeed--;
+		jumpRange -= 2;
 	}
 
 	public void Restart() {
+		restart = false;
 		rb.velocity = Vector3.zero;
 		rb.angularVelocity = Vector3.zero;
-		transform.position = new Vector3 (-5f, 0.5f, 0f);
+		transform.position = startPosition;
 		foreach (GameObject pickUp in collectedPickups) {
 			pickUp.SetActive (true);
 		}
+		collectedPickups = new List<GameObject> ();
+		maxSpeed = startSpeed;
 
 	}
 }

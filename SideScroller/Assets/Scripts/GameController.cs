@@ -40,6 +40,7 @@ public class GameController : MonoBehaviour {
 
 	private PlayerMovement playerMovement;
 
+	public float timeToReachMaxDistance;
 	public int spawnCounter = 3;
 	public float downHeightDifference;
 	public float upHeightDifference;
@@ -55,20 +56,22 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		playerMovement = player.GetComponent<PlayerMovement> ();
-		platformSpawn.maxSpawn = new Vector2 (maxDistance, upHeightDifference);
+		platformSpawn.maxSpawn = new Vector2 (playerMovement.maxSpeed * 2, upHeightDifference);
 		platformSpawn.minSpawn = new Vector2 (minDistance, downHeightDifference);
+		maxDistance = playerMovement.maxSpeed * 2;
 
 		pickUpSpawn.minSpawn = new Vector2 (-7.5f, 0.5f);
 		pickUpSpawn.maxSpawn = new Vector2 (0.5f, playerMovement.jumpPower);
-		Debug.Log (pickUpSpawn.ToString ());
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (player.transform.position.x >= originPosition.x - spawnCounter * 7.5f) {
 			Vector3 randomPosition = originPosition + platformSpawn.RandomSpawnPosition () + Vector3.right * 7.5f;
+
 			if (randomPosition.y <= deadZone + 5)
 				randomPosition.y = originPosition.y + platformSpawn.RandomY ();
+			
 			Instantiate (platform, randomPosition, Quaternion.Euler (Vector3.up * 90f));
 
 			while(Random.value > 0.5f) {
@@ -82,6 +85,14 @@ public class GameController : MonoBehaviour {
 
 		if (player.transform.position.y < deadZone) {
 			player.SendMessage ("Restart");
+			playerMovement.restart = true;
+		}
+
+		if (maxDistance != playerMovement.jumpRange) {
+			maxDistance = playerMovement.jumpRange;
+			float scaleByCollectionSpeed = Mathf.Clamp01 (playerMovement.collectionSpeed / timeToReachMaxDistance);
+			platformSpawn.maxSpawn = new Vector2 (maxDistance, upHeightDifference * scaleByCollectionSpeed);
+			platformSpawn.minSpawn = new Vector2 (playerMovement.maxSpeed - 3, downHeightDifference * scaleByCollectionSpeed);
 		}
 	}
 }
