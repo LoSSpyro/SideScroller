@@ -27,7 +27,7 @@ public class Spawn {
 		return new Vector3 (RandomX (), RandomY());
 	}
 
-	public string ToString() {
+	override public string ToString() {
 		return "Min: (" + minSpawn.x + ", " + minSpawn.y + ") Max: (" + maxSpawn.x + ", " + maxSpawn.y + ")";
 	}
 }
@@ -76,7 +76,6 @@ public class GameController : MonoBehaviour {
 
 			while(Random.value > 0.5f) {
 				Vector3 pickUpLocation = pickUpSpawn.RandomSpawnPosition ();
-				Debug.Log (pickUpLocation);
 				Instantiate (pickUp, randomPosition + pickUpLocation, Quaternion.identity);
 			}
 
@@ -88,11 +87,6 @@ public class GameController : MonoBehaviour {
 			playerMovement.restart = true;
 		}
 
-		if (maxDistance != playerMovement.jumpRange) {
-			maxDistance = playerMovement.jumpRange;
-			float scaleByCollectionSpeed = Mathf.Clamp01 (playerMovement.collectionSpeed / timeToReachMaxDistance);
-			platformSpawn.maxSpawn = new Vector2 (maxDistance, upHeightDifference * scaleByCollectionSpeed);
-			platformSpawn.minSpawn = new Vector2 (playerMovement.maxSpeed - 3, downHeightDifference * scaleByCollectionSpeed);
-		}
+
 	}
 }

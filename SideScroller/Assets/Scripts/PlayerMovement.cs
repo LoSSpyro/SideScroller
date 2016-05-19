@@ -24,12 +24,10 @@ public class PlayerMovement : MonoBehaviour {
 	public bool restart = false;
 
 	private Rigidbody rb;
-	private GameController gameController;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
-		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent<GameController> ();
 		startPosition = transform.position;
 		startSpeed = maxSpeed;
 		jumpRange = 2 * maxSpeed;
