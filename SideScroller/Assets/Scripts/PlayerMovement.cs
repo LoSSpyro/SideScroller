@@ -30,13 +30,11 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Rigidbody fuer Physics und Animator fuer Animationen
 	private Rigidbody rb;
-	private Animator anim;
 
 
 	void Start () {
 		// Hol die Komponenten
 		rb = GetComponent<Rigidbody> ();
-		anim = GetComponent<Animator> ();
 		// Setze Startposition auf momentane Position
 		startPosition = transform.position;
 
@@ -55,18 +53,9 @@ public class PlayerMovement : MonoBehaviour {
 		// Hol den Input vom pieler
 		h  = Input.GetAxis ("Horizontal");
 
-		// uebergebe diesen an den Animator
-		anim.SetFloat ("inputH", h);
-
 		// Falls Spieler Bodenkontakt hat und nach oben drueckt
-		if (Input.GetKey (KeyCode.UpArrow) && grounded) {
-			// Springe
+		if (Input.GetKey (KeyCode.UpArrow) && grounded)
 			jump = true;
-			// und animiere den Sprung
-			anim.SetBool ("jump", true);
-		} else {
-			anim.SetBool ("jump", false);
-		}
 	}
 
 	void FixedUpdate () {
@@ -152,10 +141,5 @@ public class PlayerMovement : MonoBehaviour {
 		grounded = true;
 		// und stoppe alle momentan laufenden PickUps
 		StopAllCoroutines();
-	}
-
-	// Animiere die Idle Position
-	void AnimateIdle() {
-		anim.Play ("WAIT0" + Random.Range (1, 4), 0, 0f);
 	}
 }
